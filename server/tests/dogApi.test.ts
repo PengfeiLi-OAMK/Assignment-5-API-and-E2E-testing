@@ -36,4 +36,21 @@ describe('dog API', () => {
     expect(res.body.data.imageUrl).toContain(mockedServiceData.imageUrl);
     expect(typeof res.body.data.imageUrl).toBe('string');
   });
+
+  test('GET /api/dogs/invalid returns 404 and correct error message', async () => {
+    const app = express();
+    app.use('/api/dogs', dogRoutes);
+    app.use((_req, res) => {
+      res.status(404).json({
+        success: false,
+        error: 'Route not found'
+      });
+    });
+
+    const res = await request(app).get('/api/dogs/invalid');
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBeDefined();
+    expect(res.body.error).toBe('Route not found');
+  });
 });
